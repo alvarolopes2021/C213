@@ -32,7 +32,7 @@ Hs = cnt.series (H , H_pade)
 
 plt.xlabel ( ' t [ s ] ')
 plt.ylabel('Amplitude')
-plt.title('Controle PID - CHR 1')
+plt.title('Controle PID - INTEGRAL DO ERRO')
 
 
 
