@@ -7,6 +7,14 @@ k = 3.489
 tau = 14.865
 Theta = 3.045 # atraso de propagação
 
+
+# erro em malha aberta
+# 55,83 - 16 = 39,83
+
+
+# temp acomo = 4 * tau
+
+
 #escrevendo a função de transferência da planta
 num = np. array ([k])
 den = np. array ([tau , 1])
@@ -22,7 +30,6 @@ Hmf = cnt.feedback(Hs, 1)
 t = np . linspace (0 , 100 , 100)
 (t , y ) = cnt.step_response ( 16 * Hs, t )
 (t , y1 ) = cnt.step_response ( 16 * Hmf, t )
-plt.plot (t , y )
 plt.plot (t , y1, color='brown')
 plt.xlabel ( ' t [ s ] ')
 plt.ylabel('Amplitude')
@@ -41,3 +48,4 @@ plot2=plt.plot(t1.T,degrau,label='degrau de entrada', color='orange')
 
 plt.grid ()
 plt.show()
+
