@@ -88,23 +88,16 @@ t = np . linspace (0 , 100 , 100)
 (t , y ) = cnt.step_response (16* Hcl, t )
 plt.plot (t , y )
 
-###
-num = np. array ([k])
-den = np. array ([tau , 1])
-H = cnt.tf(num , den)
-n_pade = 20
-( num_pade , den_pade ) = cnt.pade ( Theta , n_pade )
-H_pade = cnt.tf( num_pade , den_pade )
-Hs = cnt.series (H , H_pade)
 
-# realimentando
+# realimentando a função de transferencia incial
 Hmf = cnt.feedback(Hs, 1)
 
 t = np . linspace (0 , 100 , 100)
+# step_response(sys, t)
 (t , y ) = cnt.step_response ( 16 * Hs, t )
 (t , y1 ) = cnt.step_response ( 16 * Hmf, t )
 plt.plot (t , y, color="blue")
-#plt.plot (t , y1, color='brown')
+plt.plot (t , y1, color='brown')
 
 
 
