@@ -22,9 +22,6 @@ kp = 1.9366 # ori - 1.9366  25% - 0.4841   15% - 0.2904
 Ti = 7.725  
 Td = 1.067
 
-print(kp)
-print(Ti)
-print(Td)
 #escrevendo a função de transferência da planta
 num = np. array ([k])
 den = np. array ([tau , 1])
@@ -37,7 +34,6 @@ Hs = cnt.series (H , H_pade)
 plt.xlabel ( ' t [ s ] ')
 plt.ylabel('Amplitude')
 plt.title('Controle PID - CHR e COHEN COON SEM AJUSTE')
-
 
 
 # Controlador proporcional -> CHR 1
@@ -61,7 +57,7 @@ Hcl = cnt.feedback(Hdel, 1)
 
 t = np . linspace (0 , 100 , 100)
 (t , y ) = cnt.step_response (16* Hcl, t )
-plt.plot (t , y, color="yellow")
+plt.plot (t , y, label='Saida chr 1', color="yellow")
 
 
 
@@ -86,7 +82,7 @@ Hcl = cnt.feedback(Hdel, 1)
 
 t = np . linspace (0 , 100 , 100)
 (t , y ) = cnt.step_response (16* Hcl, t )
-plt.plot (t , y )
+plt.plot (t , y, label='Saida cohen coon' )
 
 
 # realimentando a função de transferencia incial
@@ -96,8 +92,8 @@ t = np . linspace (0 , 100 , 100)
 # step_response(sys, t)
 (t , y ) = cnt.step_response ( 16 * Hs, t )
 (t , y1 ) = cnt.step_response ( 16 * Hmf, t )
-plt.plot (t , y, color="blue")
-plt.plot (t , y1, color='brown')
+plt.plot (t , y, label='Saida calculada', color="blue")
+plt.plot (t , y1, label='Saida com realimentacao', color='brown')
 
 
 
@@ -110,6 +106,8 @@ t1 = mat.get('t')
 
 plt.plot(t1.T,saida, label='Saída', color='green')
 plt.plot(t1.T,degrau,label='degrau de entrada', color='orange')
+
+plt.legend(loc="upper left")
 
 plt.grid ()
 plt.show()
