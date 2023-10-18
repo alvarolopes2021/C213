@@ -9,14 +9,18 @@ Theta = 3.045 # atraso de propagação
 #parâmetros do controlador kp+kp/(Ti*s)+kp*Td*s
 
 #kp = 0.6*14.865 / 3.489 * 3.045 = 0,8395
-kp_chr=0.8395 
+kp_chr=0.8395 #ori = 0.8395 #25% 0.2098 #15% = 0.1259
 Ti_chr=14.865 # == tau
 Td_chr= 1.5225 # 0.5 * theta
 
-# por integral do erro
-kp = 0.7079
-Ti = 13.4850
-Td = 0.1651
+
+# cohen coon
+# 0.7079 - integral do erro
+# 13.4850 - i do erro 
+# 0.1651 - i do erro
+kp = 1.9366 # ori - 1.9366  25% - 0.4841   15% - 0.2904
+Ti = 7.725  
+Td = 1.067
 
 print(kp)
 print(Ti)
@@ -32,7 +36,7 @@ Hs = cnt.series (H , H_pade)
 
 plt.xlabel ( ' t [ s ] ')
 plt.ylabel('Amplitude')
-plt.title('Controle PID - INTEGRAL DO ERRO')
+plt.title('Controle PID - CHR e COHEN COON SEM AJUSTE')
 
 
 
@@ -61,7 +65,7 @@ plt.plot (t , y, color="yellow")
 
 
 
-# Controlador proporcional -> INTEGRAL DO ERRO
+# Controlador proporcional -> cohen coon
 numkp = np. array ([kp])
 denkp = np. array ([1])
 #integral
@@ -84,7 +88,6 @@ t = np . linspace (0 , 100 , 100)
 (t , y ) = cnt.step_response (16* Hcl, t )
 plt.plot (t , y )
 
-
 ###
 num = np. array ([k])
 den = np. array ([tau , 1])
@@ -101,7 +104,7 @@ t = np . linspace (0 , 100 , 100)
 (t , y ) = cnt.step_response ( 16 * Hs, t )
 (t , y1 ) = cnt.step_response ( 16 * Hmf, t )
 plt.plot (t , y, color="blue")
-plt.plot (t , y1, color='brown')
+#plt.plot (t , y1, color='brown')
 
 
 
