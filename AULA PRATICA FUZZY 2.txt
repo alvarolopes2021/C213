@@ -1,0 +1,17 @@
+erro = entrada - saida
+
+tempo | umidade desejada (entrada)   |  sensor   |   errro      |   ação
+
+ t1        0,6    			 0,8(PN)     -0,2       diminuir pot
+ t2        0,6				 0,5(PP)     +0,1       aumentar pot
+ t3        0,6 				 0,6           0         manter	
+ t4        0,6 				 0	      0,6(MP)       AUMENTAR MUITO A POT	
+
+
+var erro = dt erro = erro atual - erro ant
+
+t2 = 0,3  PP
+t3 = -0,1  pn
+t4 = 0,6   mp
+
+
