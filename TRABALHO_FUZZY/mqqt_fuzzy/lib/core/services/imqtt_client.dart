@@ -7,6 +7,7 @@ abstract class IMqttClient {
   void readData();
 
   late StreamController controller;
+  late StreamController errorController;
   late bool willSave;
   late bool error;
   late bool isConnected;

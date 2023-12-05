@@ -9,9 +9,13 @@ class MqttClientImpl implements IMqttClient {
   final client = MqttBrowserClient('ws://test.mosquitto.org', 'projetinho');
 
   int _id = 0;
+  int _idError = 0;
 
   @override
   late StreamController controller;
+
+  @override
+  late StreamController errorController;
 
   @override
   late bool error;
@@ -35,6 +39,7 @@ class MqttClientImpl implements IMqttClient {
       print(client.connectionStatus);
 
       client.subscribe('resfriador/temperatura', MqttQos.atLeastOnce);
+      client.subscribe('resfriador/erro', MqttQos.atLeastOnce);
 
       isConnected = client.connectionStatus == MqttConnectionState.connected;
 
@@ -68,10 +73,15 @@ class MqttClientImpl implements IMqttClient {
             MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
         _id++;
+        _idError++;
 
-        DataModel model = DataModel(_id, double.parse(tag));
-
-        controller.add(model);
+        if (event[0].topic == "resfriador/erro") {
+          DataModel model = DataModel(_idError, double.parse(tag));
+          errorController.add(model);
+        } else {
+          DataModel model = DataModel(_id, double.parse(tag));
+          controller.add(model);
+        }
       });
     } catch (e) {
       print(e);

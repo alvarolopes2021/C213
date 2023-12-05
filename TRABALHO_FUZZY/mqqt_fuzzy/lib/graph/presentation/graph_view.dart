@@ -16,8 +16,13 @@ class GraphView extends StatefulWidget {
 
 class _GraphView extends State<GraphView> {
   late final List<charts.Series<DataModel, int>> seriesList = [];
+  late final List<charts.Series<DataModel, int>> seriesListError = [];
+
   StreamController controller = StreamController<DataModel>.broadcast();
+  StreamController errorController = StreamController<DataModel>.broadcast();
+
   List<DataModel> chartData = [];
+  List<DataModel> errorData  = [];
   late IMqttClient _client;
   int time = 0;
 
@@ -25,6 +30,7 @@ class _GraphView extends State<GraphView> {
   void initState() {
     _client = getIt.get<IMqttClient>();
     _client.controller = controller;
+    _client.errorController = errorController;
     _client.connect();
     _client.readData();
     super.initState();
@@ -36,35 +42,36 @@ class _GraphView extends State<GraphView> {
       appBar: AppBar(
         title: Text("Fuzzy"),
       ),
-      body: StreamBuilder(
-        builder: (context, snapshot) {
-          if (snapshot.data == null) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.blue),
-            );
-          }
+      body: Column(
+        children: [          
+          Text('TEMPERATURA'),
+          StreamBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
+                );
+              }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.blue),
-            );
-          }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
+                );
+              }
 
-          chartData.add(snapshot.data);
+              chartData.add(snapshot.data);
 
-          print(chartData.length);
+              print('temp data: ' + chartData.length.toString());
 
-          seriesList.add(
-            charts.Series<DataModel, int>(
-                data: chartData,
-                domainFn: (DataModel data, _) => data.id,
-                id: "Fuzzy",
-                measureFn: (DataModel data, _) => data.data),
-          );
+              seriesList.add(
+                charts.Series<DataModel, int>(
+                    data: chartData,
+                    domainFn: (DataModel data, _) => data.id,
+                    id: "Fuzzy",
+                    measureFn: (DataModel data, _) => data.data),
+              );
 
-          return Column(
-            children: [
-              Expanded(
+              return Expanded(
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   child: charts.LineChart(
@@ -72,11 +79,52 @@ class _GraphView extends State<GraphView> {
                     animate: true,
                   ),
                 ),
-              )
-            ],
-          );
-        },
-        stream: controller.stream,
+              );
+            },
+            stream: controller.stream,
+          ),
+
+          Text('ERRO'),
+
+          StreamBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
+                );
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
+                );
+              }
+
+              errorData.add(snapshot.data);
+
+              print('erros data: ' + errorData.length.toString());
+
+              seriesList.add(
+                charts.Series<DataModel, int>(
+                    data: errorData,
+                    domainFn: (DataModel data, _) => data.id,
+                    id: "Fuzzy",
+                    measureFn: (DataModel data, _) => data.data),
+              );
+
+              return Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: charts.LineChart(
+                    seriesList,
+                    animate: true,
+                  ),
+                ),
+              );
+            },
+            stream: errorController.stream,
+          ),
+        ],
       ),
     );
   }
