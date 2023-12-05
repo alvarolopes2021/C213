@@ -1,16 +1,23 @@
-import 'dart:io';
 import 'dart:async';
-import 'package:mqtt_client/mqtt_client.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:mqqt_fuzzy/graph/data/models/data_model.dart';
+import 'package:mqtt_client/mqtt_browser_client.dart';
 
 import 'package:mqqt_fuzzy/core/services/imqtt_client.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 
 class MqttClientImpl implements IMqttClient {
-  final client =
-      MqttServerClient.withPort('', '9e56a0f11e464cb594616faf0ed42dfe', 8883);
+  final client = MqttBrowserClient('ws://test.mosquitto.org', 'projetinho');
+
+  int _id = 0;
+
+  @override
+  late StreamController controller;
 
   @override
   late bool error;
+
+  @override
+  late bool isConnected;
 
   @override
   late bool willSave;
@@ -19,18 +26,21 @@ class MqttClientImpl implements IMqttClient {
   void connect() async {
     try {
       // the next 2 lines are necessary to connect with tls, which is used by HiveMQ Cloud
-      client.secure = true;
-      client.securityContext = SecurityContext.defaultContext;
+      client.websocketProtocols = ['mqtt'];
       client.keepAlivePeriod = 20;
-      await client.connect("projetinho", "Projetinh0");
+      client.port = 8080;
+      await client.connect();
 
       print('con status: ');
       print(client.connectionStatus);
 
-      client.subscribe('PET_CONTROLLER_ETE', MqttQos.atLeastOnce);
+      client.subscribe('resfriador/temperatura', MqttQos.atLeastOnce);
+
+      isConnected = client.connectionStatus == MqttConnectionState.connected;
+
+      readData();
     } catch (e) {
       print('client exception - $e');
-      client.disconnect();
     }
   }
 
@@ -46,18 +56,26 @@ class MqttClientImpl implements IMqttClient {
   }
 
   @override
-  void readData(StreamController controller) {
+  void readData() {
     // TODO: implement readData
-    client.updates!.listen((event) async {
-      final recMess = event[0].payload as MqttPublishMessage;
+    print('will read data');
 
-      final tag =
-          MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+    try {
+      client.updates!.listen((event) async {
+        final recMess = event[0].payload as MqttPublishMessage;
 
-      sendData("OPEN");
-      
-      controller.add(tag);
-    });
+        final tag =
+            MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+
+        _id++;
+
+        DataModel model = DataModel(_id, double.parse(tag));
+
+        controller.add(model);
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -65,8 +83,8 @@ class MqttClientImpl implements IMqttClient {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addString(message);
 
-    print(
-        'Publishing message "$message" to topic PET_CONTROLLER_ETE_ACTION');
-    client.publishMessage("PET_CONTROLLER_ETE_ACTION", MqttQos.exactlyOnce, builder.payload!);
+    print('Publishing message "$message" to topic PET_CONTROLLER_ETE_ACTION');
+    client.publishMessage(
+        "PET_CONTROLLER_ETE_ACTION", MqttQos.exactlyOnce, builder.payload!);
   }
 }

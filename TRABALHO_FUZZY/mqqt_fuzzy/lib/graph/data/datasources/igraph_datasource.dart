@@ -1,4 +1,6 @@
+import 'dart:async';
+
 abstract class IGraphDataSource {
-  Future<int> getError();
-  Future<double> getTemp();
+  Future<void> getError(StreamController controller);
+  Future<void> getTemp(StreamController controller);
 }

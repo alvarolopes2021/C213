@@ -1,3 +1,5 @@
+import 'dart:async';
+
 abstract class ErrorUseCase{
-  Future<int> getError();
+  Future<int> getError(StreamController controller);
 }

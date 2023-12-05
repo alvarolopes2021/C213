@@ -1,19 +1,23 @@
+import 'dart:async';
+
+import 'package:mqqt_fuzzy/core/services/imqtt_client.dart';
 import 'package:mqqt_fuzzy/graph/data/datasources/igraph_datasource.dart';
+import 'package:mqqt_fuzzy/main.dart';
 
-class GraphDataSource implements IGraphDataSource{
-  
+class GraphDataSource implements IGraphDataSource {
+  late IMqttClient client;
 
-
-  @override
-  Future<int> getError() {
-    // TODO: implement getError
-    throw UnimplementedError();
+  GraphDataSource() {
+    client = getIt.get<IMqttClient>();
   }
 
   @override
-  Future<double> getTemp() {
-    // TODO: implement getTemp
-    throw UnimplementedError();
+  Future<void> getError(StreamController controller) async {
+    client.readData();
   }
 
+  @override
+  Future<void> getTemp(StreamController controller) async{
+    client.readData();
+  }
 }
